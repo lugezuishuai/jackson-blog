@@ -1,0 +1,29 @@
+name: syncToGitee
+on:
+  push:
+    branches:
+      - gh-pages
+  workflow_dispatch:
+jobs:
+  repo-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source codes # 检出仓库的代码到runner
+        uses: actions/checkout@v2
+      - name: Mirror the Github organization repos to Gitee. # 从github同步仓库到gitee
+        uses: Yikun/hub-mirror-action@master
+        with:
+          src: github/lugezuishuai
+          dst: gitee/huang_dong_lu
+          dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
+          dst_token: ${{ secrets.GITEE_TOKEN }}
+          static_list: "Jackson-blog"
+          force_update: true
+          debug: true
+      - name: Build Gitee Pages # 部署Gitee Pages
+        uses: yanglbme/gitee-pages-action@main
+        with:
+          gitee-username: huang_dong_lu # gitee用户名
+          gitee-password: ${{ secrets.GITEE_PASSWORD }} # gitee密码
+          gitee-repo: huang_dong_lu/Jackson-blog # gitee仓库
+          branch: gh-pages # 要部署的分支
